@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Text Following Elliptical Cylinder Path with Three.js</title>
+  <title>3D Text</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/loaders/FontLoader.js"></script>
@@ -64,7 +64,6 @@
       cylinder.scale.set(6, 1, 1);
       scene.add(cylinder);
 
-      // Add lights to the scene
       pointLight = new THREE.PointLight(0xffffff, 1.2);
       pointLight.position.set(50, 50, 50);
       scene.add(pointLight);
@@ -82,7 +81,6 @@
       });
 
       function createTextOnCylinder(font, text) {
-        // Remove old meshes
         textMeshes.forEach(mesh => scene.remove(mesh));
         textMeshes = [];
 
@@ -100,13 +98,10 @@
         const a = cylinderRadius * gui.frontRadius;
         const b = cylinderRadius;
 
-        // Fixed spacing between characters (in radians)
-        const fixedSpacing = (2 * Math.PI) / (50 * letterSpacingFactor); // Base spacing for 50 characters
+        const fixedSpacing = (2 * Math.PI) / (50 * letterSpacingFactor); 
         let currentAngle = 0;
 
-        // Calculate total angle needed for text
         const totalAngleNeeded = fixedSpacing * text.length;
-        // Start angle to center the text
         currentAngle = Math.PI - (totalAngleNeeded / 2);
 
         for (let i = 0; i < text.length; i++) {
@@ -133,7 +128,6 @@
 
           const textMesh = new THREE.Mesh(textGeometry, textMaterial.clone());
 
-          // Position using fixed spacing
           const x = a * Math.sin(currentAngle);
           const z = b * Math.cos(currentAngle);
           textMesh.position.set(x, 0, z);
@@ -216,7 +210,6 @@
         document.getElementById('toggleButton').textContent = gui.isPlaying ? "Pause" : "Play";
       });
 
-      // Add front spotlight
       const frontSpotLight = new THREE.SpotLight(0xffffff, 1);
       frontSpotLight.position.set(0, 0, 30);
       frontSpotLight.angle = Math.PI / 2;
@@ -225,7 +218,6 @@
       frontSpotLight.distance = 100;
       scene.add(frontSpotLight);
 
-      // Add subtle ambient light
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
       scene.add(ambientLight);
     }
@@ -247,20 +239,17 @@
       textMeshes.forEach((textMesh) => {
         const angle = textMesh.userData.angle;
 
-        // Define zones (in radians)
-        const frontTransitionStart = Math.PI * 1.75;  // Start fading in
-        const frontTransitionEnd = Math.PI * 2;       // Fully visible
-        const backTransitionStart = Math.PI * 0;      // Start fading out
-        const backTransitionEnd = Math.PI * 0.25;     // Fully invisible
+        const frontTransitionStart = Math.PI * 1.75;  
+        const frontTransitionEnd = Math.PI * 2;       
+        const backTransitionStart = Math.PI * 0;     
+        const backTransitionEnd = Math.PI * 0.25;    
 
-        // Narrower front zone for light effect
-        const frontZoneStart = Math.PI * 1.95;        // Start light effect later
-        const frontZoneEnd = Math.PI * 2.05;         // End light effect earlier
+        const frontZoneStart = Math.PI * 1.95;      
+        const frontZoneEnd = Math.PI * 2.05;       
 
         let opacity = 1.0;
         let emissiveIntensity = 0.0;
 
-        // Calculate opacity based on position in rotation
         if (angle >= frontTransitionStart && angle <= frontTransitionEnd) {
           opacity = (angle - frontTransitionStart) / (frontTransitionEnd - frontTransitionStart);
         } else if (angle >= backTransitionStart && angle <= backTransitionEnd) {
@@ -269,16 +258,13 @@
           opacity = 0;
         }
 
-        // More concentrated light effect
         if (angle >= frontZoneStart && angle <= frontZoneEnd) {
-          // Sharper peak in the front
           const normalizedPosition = (angle - frontZoneStart) / (frontZoneEnd - frontZoneStart);
-          emissiveIntensity = 0.8 * Math.sin(normalizedPosition * Math.PI); // Creates a smoother peak
+          emissiveIntensity = 0.8 * Math.sin(normalizedPosition * Math.PI);
         } else {
-          emissiveIntensity = 0; // No light effect outside the front zone
+          emissiveIntensity = 0; 
         }
 
-        // Apply effects
         textMesh.material.opacity = opacity;
         textMesh.material.emissiveIntensity = emissiveIntensity;
         textMesh.visible = opacity > 0.01;
